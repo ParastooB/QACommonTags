@@ -16,15 +16,6 @@ javac -cp $libs MySQLHandler.java
 echo 'javac FreebaseDBHandler.java'
 javac -cp $libs FreebaseDBHandler.java
 
-echo 'javac MergeSort.java'
-javac -cp $libs MergeSort.java
-
-echo 'javac PredicateComparison.java'
-javac -cp $libs PredicateComparison.java
-
-echo 'javac Predicates.java'
-javac -cp $libs Predicates.java
-
 echo 'javac Search.java'
 javac -cp $libs Search.java
 

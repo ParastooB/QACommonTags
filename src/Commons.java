@@ -45,8 +45,9 @@ public class Commons {
         }
     }
 
-    public void commonMap(Map<String, List<NTriple>> commonPredicates, String tag1, String tag2){ // the tags
+    private Map<String, List<NTriple>> commonMapTwo(String tag1, String tag2){ // the tags
         Map<String, Map<String, List<NTriple>>> commonTags = new HashMap<>(); 
+        Map<String, List<NTriple>> commonPredicates = new HashMap<>();
         commonTwo(commonTags);
         Set<String> one = commonTags.get(tag1).keySet();
         Set<String> two = commonTags.get(tag2).keySet();
@@ -66,9 +67,10 @@ public class Commons {
             }
         }
         commonTags.clear();
+        return commonPredicates;
     }
 
-    public void links (List<String> result, String tag1, String tag2){
+    private void links (List<String> result, String tag1, String tag2){
         Set<String> answerIDs = new HashSet<>();
         Set<String> tagIDs = new HashSet<>();
         List<String> IDsList = new ArrayList<>();
@@ -112,5 +114,31 @@ public class Commons {
             tagTriples.clear();
         }
         tagIDs.clear();
+    }
+
+    public void CommonMap(){
+        List<Map<String, List<NTriple>>> result = new ArrayList<>();
+        Map<String, List<NTriple>> garb = new HashMap<>();
+        List<String> temp = new ArrayList<>();
+        for (String x: this.tags.keySet()){
+            temp.add(x);
+        }
+        int s = temp.size();
+        int count = 0;
+        for (int i = 0; i < s-1; i ++){
+            for (int j = i + 1; j < s; j ++){
+                System.out.println(temp.get(i)+" - vs. - "+temp.get(j));
+                garb = commonMapTwo(temp.get(i), temp.get(j));
+                result.add(garb);
+                for (String p: garb.keySet()){
+                    System.out.println("    "+ p + " --> " + garb.get(p).size());
+                    count = count + garb.get(p).size();
+                }
+            }
+        }
+        System.out.println(count+" tag triples");
+        garb.clear();
+        temp.clear();
+        result.clear();
     }
 }

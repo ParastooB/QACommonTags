@@ -56,18 +56,6 @@ public class Main {
             System.err.println("UnsupportedEncodingException: " + e.getMessage());
         }
 
-        PrintWriter writer3 = null;
-        try{
-            writer3 = new PrintWriter("../outputs/predicates.txt", "UTF-8");
-        } catch (FileNotFoundException e) {
-            System.err.println("FileNotFoundException: " + e.getMessage());
-        } catch (SecurityException e) {
-            System.err.println("SecurityException: " + e.getMessage());
-        } catch (UnsupportedEncodingException e) {
-            System.err.println("UnsupportedEncodingException: " + e.getMessage());
-        }
-        
-
     //---Prep FUNCTIONS---
         processArgs(args);
         readConfigFile();
@@ -98,16 +86,6 @@ public class Main {
                 e.printStackTrace();
             }
         }
-        else { //if the file is retirved aka not algorithm readable text file 
-            QARetrieval.parseJSON(filepath); //retrieves QAs from the JSON file
-            questionBank = QARetrieval.getQuestions();
-            answerBank = QARetrieval.getAnswers();
-        }
-        if (!isTagged) { //if the file is not tagged srart the service once and for all
-            TagMe.setRhoThreshold(rhoThreshold);
-            TagMe.startWebClient();
-        }
-
 	// boundry check
         if (startIndex < 0) startIndex = 0; //ensures startIndex has a minimum value of 0
         //ensures endIndex cannot be less than startIndex
@@ -151,51 +129,13 @@ public class Main {
 
         //bottom-up
             search = new Search(answer,db,tags);
-            search.bottomUp();
-            if (!search.isInFB()) //answer doesn't exist in Freebase
-                continue;
 
         //top-down
-            try{
-                writer3.println(search.sortedPredicates());
-                writer3.println("------         END         ----------");
-            } catch (NullPointerException  e) {
-                System.err.println("NullPointerException: " + e.getMessage());
-            }
             search.topDown();
-            matches = search.getMatchesSize();
-            if (matches == 0 && !search.isAnswerContained()){
-            // if (matches == 0){
-                try{
-                    writer.println(search.getQuestionPackage(question));
-                } catch (NullPointerException  e) {
-                    System.err.println("NullPointerException: " + e.getMessage());
-                }
-                System.out.printf("No answer but %d AIDs.\n",search.getAnswerIDsSize());
-                if(search.isAnswerInText()){
-                    System.out.println("However the answer was found in the texts associated with the tags");
-                }
-                System.out.println();
-            }
-            else{
-                try{
-                    writer2.println(search.getQuestionPackage(question));
-                } catch (NullPointerException  e) {
-                    System.err.println("NullPointerException: " + e.getMessage());
-                }
-                System.out.println();
-            }
             search.cleanUp();
-
-            if (search.isMatched()) uniqueMatches++;
-            System.out.printf("PROGRESS: %d MATCHES (%d UNIQUE MATCHES)\nTIME: %.3fs FOR QUESTION AND %.3fs SINCE START\n\n",
-                    matches, uniqueMatches, (System.currentTimeMillis() - previousTime)/1000.0, (System.currentTimeMillis() - startTime)/1000.0);
-            previousTime = System.currentTimeMillis();
         }
-        System.out.printf("PROCESSING COMPLETE\nRESULTS: %d MATCHES (%d UNIQUE MATCHES)\n", matches, uniqueMatches);
         writer.close();
         writer2.close();
-        writer3.close();
         tagsBank.clear();
     }
 

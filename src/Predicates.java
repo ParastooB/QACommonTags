@@ -8,7 +8,6 @@ public class Predicates{
     private String freebaseID;
     private String input = new String();
     private Scanner console = new Scanner(System.in);
-    private Map<String,Map<String,List<NTriple>>> comparablePreds = new HashMap<>();
 
     public Predicates(String freebaseID, FreebaseDBHandler db ){
         this.db = db;
@@ -101,63 +100,8 @@ public class Predicates{
         return this.allPreds.get(predicate).size();
     }
 
-    public void comparablePredicate(Map<String,Map<String,List<NTriple>>> result) {
-        List<String> results = new ArrayList<>();
-        List<NTriple> sorted = new ArrayList<>();
-        result.clear();
-        if (this.allPreds == null)
-            return;
-        if (this.allPreds.size() == 0)
-            return;
-        for (String entry: this.allPreds.keySet()){
-            if(countPredicate(entry)> 1){
-                results = PredicateComparison.arePredicatesComparable(this.allPreds.get(entry),this.db);
-                if(results.size() > 0){
-                    Map<String,List<NTriple>> temp = new HashMap<>();
-                    result.put(entry,temp);
-                    for(String s: results){
-                        sorted = sortPredObjects (s, getPredObjects (entry));
-                        temp.put(s,sorted);
-                    }
-                }
-            }
-        }
-    }
-
-    public void printPredicate (){
-        Set<String> objectIDs = new HashSet<>();
-        List<String> results = new ArrayList<>();
-        List<NTriple> sorted = new ArrayList<>();
-        if (this.allPreds == null)
-            return;
-        if (this.allPreds.size() == 0)
-            return;
-        for (String entry: this.allPreds.keySet()){
-            // System.out.println("    --------    "+entry);
-            if(countPredicate(entry)> 1){
-                // System.out.println("    "+entry+"       --> " + countPredicate(entry));
-                results = PredicateComparison.arePredicatesComparable(this.allPreds.get(entry),this.db);
-                if(results.size() > 0){
-                    System.out.println(entry);
-                    for(String s: results){
-                        System.out.println("    ↪" + s);
-                        sorted = sortPredObjects (s, getPredObjects (entry));
-                        for(NTriple n: sorted){
-                            System.out.println("        "+n);
-                        }
-                    }
-                }
-            }
-            // objectIDs = new HashSet<>();
-            // for (NTriple t: this.allPreds.get(entry)){
-            //     objectIDs.add(t.getObjectID());
-            // }
-        }
-    }
-
     public void cleanUp(){
         this.allPreds.clear();
-        this.comparablePreds.clear();
         this.stringPreds.clear();
     }
 }
